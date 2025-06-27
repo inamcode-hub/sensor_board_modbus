@@ -1,6 +1,7 @@
 // modbus/client.js
 const ModbusRTU = require('modbus-serial');
 const config = require('../config/modbus.config');
+const logger = require('../utils/logger');
 
 function createClient() {
   const client = new ModbusRTU();
@@ -8,12 +9,14 @@ function createClient() {
   return new Promise((resolve, reject) => {
     client.connectRTUBuffered(config.serialPort, { baudRate: config.baudRate })
       .then(() => {
-        console.log(`✅ Connected to ${config.serialPort} at ${config.baudRate} baud`);
+      
+        logger.info(`[Modbus Client] ✅ Connected to ${config.serialPort} at ${config.baudRate} baud`);
         client.setTimeout(1000); // Optional timeout per request
         resolve(client);
       })
       .catch((err) => {
-        console.error('❌ Failed to connect to Modbus:', err.message);
+      
+        logger.error(`[Modbus Client] ❌ Connection error: ${err.message}`);
         reject(err);
       });
   });

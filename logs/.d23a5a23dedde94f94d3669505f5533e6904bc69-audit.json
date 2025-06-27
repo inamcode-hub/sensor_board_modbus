@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "logs/.d23a5a23dedde94f94d3669505f5533e6904bc69-audit.json",
+    "files": [
+        {
+            "date": 1751039356124,
+            "name": "logs/modbus-2025-06-27.log",
+            "hash": "a815370dccfe071306ace53d39fa08ee4607f7e1d27b3b173338527f1e8839a0"
+        }
+    ],
+    "hashType": "sha256"
+}

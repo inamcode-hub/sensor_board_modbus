@@ -1,14 +1,15 @@
 // server/websocket.js
 const WebSocket = require('ws');
+const logger = require('../utils/logger');
 
 function setupWebSocket(server) {
   const wss = new WebSocket.Server({ server });
 
   wss.on('connection', (ws) => {
-    console.log('📡 Client connected');
+   logger.info('[WebSocket] 🔌 Client connected');
 
     ws.on('close', () => {
-      console.log('🔌 Client disconnected');
+      logger.info('[WebSocket] 🔌 Client disconnected');
     });
   });
 

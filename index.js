@@ -6,6 +6,7 @@ const defineSnapshotModel = require('./db/models/modbusAnalogSnapshot');
 const pollOnce = require('./modbus/poller');
 const createHttpServer = require('./server/express');
 const setupWebSocket = require('./server/websocket');
+const logger = require('./utils/logger');
 
 
 const POLL_INTERVAL_MS = 1000; // ⏱️ Adjust delay here
@@ -17,10 +18,11 @@ let interval = null;
 async function startApp() {
   try {
     await sequelize.authenticate();
-    console.log('✅ DB connected.');
+   
+    logger.info('✅ DB connected.');
 
     await sequelize.sync(); // optional: { alter: true }
-    console.log('✅ Models synced.');
+    logger.info('✅ DB synced.');
 
     const httpServer = createHttpServer();
 const { broadcast } = setupWebSocket(httpServer);
@@ -29,30 +31,33 @@ const { broadcast } = setupWebSocket(httpServer);
 
 // Start listening
 httpServer.listen(process.env.WEB_PORT || 4000, () =>
-  console.log(`🌍 WebSocket + Web running on :${process.env.WEB_PORT || 4000}`)
-);
+
+logger.info(`🌍 WebSocket + Web running on :${process.env.WEB_PORT || 4000}`
+));
 
     // Begin polling in loop
     interval = setInterval(() => {
       pollOnce(broadcast).catch((err) => {
-        console.error('❌ Polling error:', err.message);
+        logger.error(`❌ Polling error: ${err.message}`);
+       
       });
     }, POLL_INTERVAL_MS);
 
-    console.log(`🚀 Polling started every ${POLL_INTERVAL_MS}ms`);
+    logger.info(`⏱️ Polling every ${POLL_INTERVAL_MS} ms`);
 
   } catch (err) {
-    console.error('❌ Init error:', err.message);
+    logger.error(`❌ Failed to start app: ${err.message}`);
     process.exit(1);
   }
 }
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\n🛑 Shutting down...');
+
+  logger.info('🛑 Shutting down...');
   if (interval) clearInterval(interval);
   sequelize.close().then(() => {
-    console.log('✅ DB closed.');
+    logger.info('✅ DB connection closed.');
     process.exit(0);
   });
 });

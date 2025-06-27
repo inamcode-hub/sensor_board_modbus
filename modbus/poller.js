@@ -6,6 +6,7 @@ const sequelize = require('../db');
 const { DataTypes } = require('sequelize');
 const defineSnapshotModel = require('../db/models/modbusAnalogSnapshot');
 const { recordSuccess, recordFailure } = require('./watchdog');
+const logger = require('../utils/logger');
 
 const Snapshot = defineSnapshotModel(sequelize, DataTypes);
 
@@ -27,13 +28,15 @@ async function pollOnce(broadcast) {
 
     result.timestamp = new Date();
     await Snapshot.create(result);
-    console.log('📥 Snapshot written:', result);
+   
+    logger.info(`[Modbus Poller] 📥 Snapshot written: ${JSON.stringify(result)}`);
 
     // ✅ Broadcast only if function is passed
     if (broadcast) broadcast(result);
 
   } catch (err) {
-    console.error('❌ Polling error:', err.message);
+  
+    logger.error(`[Modbus Poller] ❌ Error: ${err.message}`);
   } finally {
     client.close();
   }
