@@ -9,7 +9,8 @@ const setupWebSocket = require('./server/websocket');
 const logger = require('./utils/logger');
 
 
-const POLL_INTERVAL_MS = 1000; // ⏱️ Adjust delay here
+// ⏱️ Adjust delay here and there is no error on 200 ms below this error
+const POLL_INTERVAL_MS = 1000; 
 
 const Snapshot = defineSnapshotModel(sequelize, DataTypes);
 
