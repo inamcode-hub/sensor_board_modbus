@@ -1,0 +1,26 @@
+{
+  "name": "modbus-poller",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.6.0",
+    "express": "^5.1.0",
+    "modbus-serial": "^8.0.21-no-serial-port",
+    "pg": "^8.16.2",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.7",
+    "serialport": "^10.5.0",
+    "ws": "^8.18.2"
+  },
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

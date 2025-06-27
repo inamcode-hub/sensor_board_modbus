@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Modbus Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .timestamp {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📡 Live Modbus Snapshot</h2>
+  <div class="timestamp">Waiting for data...</div>
+  <table id="modbus-table">
+    <thead>
+      <tr>
+        <th>Channel</th>
+        <th>Voltage (V)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Live rows go here -->
+    </tbody>
+  </table>
+
+  <script>
+    const ws = new WebSocket("ws://192.168.1.83:4000");
+
+    ws.onopen = () => {
+      console.log("✅ WebSocket connected");
+      document.querySelector(".timestamp").textContent = "Connected. Waiting for first reading...";
+    };
+
+    ws.onmessage = (msg) => {
+      const data = JSON.parse(msg.data);
+      const tableBody = document.querySelector("#modbus-table tbody");
+      const timestamp = new Date(data.timestamp).toLocaleTimeString();
+
+      document.querySelector(".timestamp").textContent = `🕒 Timestamp: ${timestamp}`;
+
+      // Clear existing rows
+      tableBody.innerHTML = "";
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (key.startsWith("slave")) {
+          const row = document.createElement("tr");
+          const channelCell = document.createElement("td");
+          const valueCell = document.createElement("td");
+          channelCell.textContent = key;
+          valueCell.textContent = value.toFixed(3);
+          row.appendChild(channelCell);
+          row.appendChild(valueCell);
+          tableBody.appendChild(row);
+        }
+      });
+    };
+
+    ws.onerror = (err) => {
+      console.error("❌ WebSocket error:", err);
+      document.querySelector(".timestamp").textContent = "❌ Error connecting to WebSocket.";
+    };
+  </script>
+
+</body>
+</html>
